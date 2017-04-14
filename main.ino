@@ -10,7 +10,6 @@
 #include "i2cCfg.h"
 #include "mhz19.h"
 #include <Adafruit_GFX.h>
-//#10
 
 extern "C" {
 #include "user_interface.h"
@@ -261,17 +260,20 @@ void drawFrameSensors(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Roboto_10);
   display->drawString(5, 16, "CO2");
-  
+    
     if (readCO2() < 600)  { display->drawString(80, 16, "good"); }
     else if (readCO2() > 600 && readCO2() < 1000)  { display->drawString(80, 16, "normal"); }
     else if (readCO2() > 1000 && readCO2() < 2000)  { display->drawString(80, 16, "bad"); }
     else if (readCO2() > 2000) { display->drawString(80, 16, "alarm"); }
+    else if (readCO2() < 1) { display->drawString(80, 16, "not work"); }
   
   display->drawString(80, 3, "ppm");
   //display->drawString(80, 3, "ppm");
-  display->drawString((128/3)+11, 40, "�C");
+  display->drawString((128/3)+11, 40, "°C");
   display->drawString((128*0,67)+35, 40, "%");
-  display->drawLine(45, 40, 35, 30);
+  
+  display->drawLine(00, 36, 128, 36);//gorizontal line
+  display->drawLine((128/2+3), 36, (128/2+3), 64);//vertical line
     
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(Roboto_Mono_Bold_20);
@@ -522,4 +524,3 @@ void loop()
  // Serial.println("  Free RAM: " + String(mem));
 
 }
-\ No newline at end of file
