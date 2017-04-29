@@ -1,6 +1,5 @@
 #include <Ticker.h>
 #include <Wire.h>
-#include "scani2c.h"
 #include "oled1306.h"
 #include "SSD1306.h" 
 #include <ESP8266WiFi.h>
@@ -17,15 +16,20 @@ extern "C" {
 
 // Wifi Credentials
 // Leaving * will try to connect with SDK saved credentials
-#define MY_SSID     "IT"
-#define MY_PASSWORD "q1w2e3r4"
+//#define MY_SSID     "IT"
+//#define MY_PASSWORD "q1w2e3r4"
+
+#define MY_SSID     "ap.droider.org"
+#define MY_PASSWORD "9032438161"
+
 
 char ssid[33] ;
 char password[65];
 
 
-//TAKU//
+//for ESP.getVCC//
 ADC_MODE(ADC_VCC);
+int volt = ESP.getVcc()/1024.00f;
 
 Ticker ticker;
 bool readyForUpdate = false;  // flag to launch update (I2CScan) basic setup
@@ -126,6 +130,7 @@ void drawFrameHWInfo(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x,
   display->drawString(0, 52, "vcc:");
   display->drawString(22, 52, String(ESP.getVcc()/1024.00f));
   ui.disableIndicator();
+  display->display();
 }
 
 /* ======================================================================
@@ -232,7 +237,7 @@ void drawFrameNet(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
   Output  : -
   Comments: -
   ====================================================================== */
-  /*
+ /*
 void drawFrameLogo(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   display->clear();
   display->drawXbm(x + (128 - ch2i_width) / 2, y, ch2i_width, ch2i_height, ch2i_bits);
@@ -254,21 +259,50 @@ void drawFrameSensors(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x
   // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
   // on how to create xbm files
  // display->drawXbm((128 - WiFi_width) / 2, 0, WiFi_width, WiFi_height, WiFi_bits);
-   display->drawXbm((128 - wifi_width_s), 0, wifi_width_s, wifi_height_s, wifi_bits_s);
+   //display->drawXbm((128 - wifi_width_s), 0, wifi_width_s, wifi_height_s, wifi_bits_s);
+
+
+//display signal stright
+      if (WiFi.RSSI() <= -90 && WiFi.RSSI() > -100) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits00);
+else if (WiFi.RSSI() >= 0 ) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits00);      
+else if (WiFi.RSSI() <= -80 && WiFi.RSSI() > -90 ) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits20);
+else if (WiFi.RSSI() <= -70 && WiFi.RSSI() > -80 ) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits40);
+else if (WiFi.RSSI() <= -60 && WiFi.RSSI() > -70) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits60);
+else if (WiFi.RSSI() <= -50 && WiFi.RSSI() > -60) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits80);
+else if (WiFi.RSSI() <= -40 && WiFi.RSSI() > -50) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits100);
+
+
+
+
+ //display->drawString(32, 2, String(ESP.getVcc()/1024.00f));
+ //String(ESP.getVcc()/1024.00f))
+ if (ESP.getVcc()/1024.00f > 1 && ESP.getVcc()/1024.00f < 2) {display->drawXbm(0, 5, bat_width, bat_height, bat_bmp0);}
+ else if (ESP.getVcc()/1024.00f > 2 && ESP.getVcc()/1024.00f < 2.1 ) {display->drawXbm(0, 5, bat_width, bat_height, bat_bmp10);}
+ else if (ESP.getVcc()/1024.00f > 2.1 && ESP.getVcc()/1024.00f < 2.3) {display->drawXbm(0, 5, bat_width, bat_height, bat_bmp25);}
+ else if (ESP.getVcc()/1024.00f > 2.3 && ESP.getVcc()/1024.00f < 2.5) {display->drawXbm(0, 5, bat_width, bat_height, bat_bmp50);}
+ else if (ESP.getVcc()/1024.00f > 2.5 && ESP.getVcc()/1024.00f < 2.8) {display->drawXbm(0, 5, bat_width, bat_height, bat_bmp75);}
+ else if (ESP.getVcc()/1024.00f > 2.8 && ESP.getVcc()/1024.00f < 3) {display->drawXbm(0, 5, bat_width, bat_height, bat_bmp90);}
+ else if (ESP.getVcc()/1024.00f > 3 && ESP.getVcc()/1024.00f < 4) {display->drawXbm(0, 5, bat_width, bat_height, bat_bmp100);}
 
 //  display->drawString(x + 64, 0, "Sensors info");
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Roboto_10);
-  display->drawString(5, 16, "CO2");
-    
-    if (readCO2() < 600)  { display->drawString(80, 16, "good"); }
+
+
+
+  display->drawString(5, 17, "CO2");
+    if (readCO2() < 200)  { display->drawString(80, 16, "not work"); }
+    else if (readCO2() < 600 )  { display->drawString(80, 16, "good"); }
     else if (readCO2() > 600 && readCO2() < 1000)  { display->drawString(80, 16, "normal"); }
     else if (readCO2() > 1000 && readCO2() < 2000)  { display->drawString(80, 16, "bad"); }
     else if (readCO2() > 2000) { display->drawString(80, 16, "alarm"); }
-    else if (readCO2() < 1) { display->drawString(80, 16, "not work"); }
-  
-  display->drawString(80, 3, "ppm");
-  //display->drawString(80, 3, "ppm");
+
+//
+display->drawString(32, 2, String (WiFi.RSSI()));
+//
+     
+  display->drawString(54, 1, "ppm");
+  display->drawString(80, 1, "status");
   display->drawString((128/3)+11, 40, "°C");
   display->drawString((128*0,67)+35, 40, "%");
   
@@ -277,7 +311,7 @@ void drawFrameSensors(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x
     
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(Roboto_Mono_Bold_20);
-  display->drawString((128-24)/2, 10, String(readCO2()));
+  display->drawString((128-24)/2, 11, String(readCO2()));
   display->drawString((128/3)-12, 40, "24.3");
   display->drawString((128*0,67)+22, 40, "36");
  // display->drawString(x + 57, 46, String(readCO2()));
@@ -292,6 +326,12 @@ FrameCallback frames[] = { drawFrameSensors };
 //REM OLD//FrameCallback frames[] = {drawWiFiSignal, drawFrameHWInfo, drawFrameWifi, drawFrameI2C, drawFrameSensors, drawFrameNet};
 //REM OLD//int numberOfFrames = 4;
 int numberOfFrames = 1;
+
+
+FrameCallback startframes[] = { drawFrameHWInfo };
+//REM OLD//FrameCallback frames[] = {drawWiFiSignal, drawFrameHWInfo, drawFrameWifi, drawFrameI2C, drawFrameSensors, drawFrameNet};
+//REM OLD//int startnumberOfFrames = 4;
+int numberOfstartFrames = 1;
 
 
 
@@ -321,6 +361,8 @@ void setup()
   Serial.begin(115200);
   Serial.print(F("\r\nBooting on "));
   Serial.println(ARDUINO_BOARD);
+
+
 
   
 /*
@@ -357,8 +399,17 @@ void setup()
     display.init();
     display.flipScreenVertically();
     display.clear();
- //REM_LOGO//   display.drawXbm((128 - ch2i_width) / 2, 0, ch2i_width, ch2i_height, ch2i_bits);
-    display.display();
+ //REM_LOGO//  display.drawXbm((128 - ch2i_width) / 2, 0, ch2i_width, ch2i_height, ch2i_bits);
+ //   display.display();
+  //  delay (5000);
+
+
+
+  //TAKU for first display of HW
+
+   // drawFrameHWInfo;
+  //  display.drawString(45, 22, String(system_get_boot_version()));
+  //  delay (5000);
 
     display.setFont(ArialMT_Plain_10);
     display.setTextAlignment(TEXT_ALIGN_CENTER);
@@ -384,6 +435,7 @@ void setup()
 
   Serial.println(F("WiFi scan start"));
   drawProgress(&display, pbar, F("Scanning WiFi"));
+ 
   //drawFrameBatInfo(&display, pbar, F("battery %"));
 
   // WiFi.scanNetworks will return the number of networks found
@@ -450,6 +502,17 @@ void setup()
   Serial.println(F("Setup done"));
   drawProgress(&display, 100, F("Setup Done"));
   
+  //Frames_of_HW_INFO
+ /* if (has_display) {
+    ui.setTargetFPS(30);
+    ui.setFrameAnimation(SLIDE_LEFT);
+    ui.setstartFrames(startframes, numberOfstartFrames);
+    ui.init();
+    display.flipScreenVertically();
+  }
+*/
+
+  
   if (has_display) {
     ui.setTargetFPS(30);
     ui.setFrameAnimation(SLIDE_LEFT);
@@ -460,8 +523,9 @@ void setup()
 
   //updateData(&display);
 
-  // Rescan I2C every 300 seconds
-  ticker.attach(300, setReadyForUpdate);
+  // Rescan I2C every 600 seconds
+  ticker.attach(600, setReadyForUpdate);
+  
 
 }
 
@@ -471,24 +535,16 @@ void setup()
   ====================================================================== */
 void loop()
 {
-  if (has_display) {
-    if (readyForUpdate && ui.getUiState()->frameState == FIXED) {
-      updateData(&display);
-    }
 
-    int remainingTimeBudget = ui.update();
+  int remainingTimeBudget = ui.update();
 
-    if (remainingTimeBudget > 0) {
-      // You can do some work here
-      // Don't do stuff if you are below your
-      // time budget.
-      delay(remainingTimeBudget);
-    }
-  } else {
-    if (readyForUpdate ) {
-      updateData(&display);
-    }
+  if (remainingTimeBudget > 0) {
+    // You can do some work here
+    // Don't do stuff if you are below your
+    // time budget.
+    delay(remainingTimeBudget);
   }
+
 
 /*
  * CO2 SETTINGS
