@@ -262,7 +262,7 @@ void drawFrameSensors(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x
    //display->drawXbm((128 - wifi_width_s), 0, wifi_width_s, wifi_height_s, wifi_bits_s);
 
 
-//display signal stright
+//display signal strength
       if (WiFi.RSSI() <= -90 && WiFi.RSSI() > -100) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits00);
 else if (WiFi.RSSI() >= 0 ) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits00);      
 else if (WiFi.RSSI() <= -80 && WiFi.RSSI() > -90 ) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits20);
@@ -271,11 +271,7 @@ else if (WiFi.RSSI() <= -60 && WiFi.RSSI() > -70) display->drawXbm((128 - wifi_w
 else if (WiFi.RSSI() <= -50 && WiFi.RSSI() > -60) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits80);
 else if (WiFi.RSSI() <= -40 && WiFi.RSSI() > -50) display->drawXbm((128 - wifi_width), 2, wifi_width, wifi_height, wifi_bits100);
 
-
-
-
- //display->drawString(32, 2, String(ESP.getVcc()/1024.00f));
- //String(ESP.getVcc()/1024.00f))
+ //display battery charge
  if (ESP.getVcc()/1024.00f > 1 && ESP.getVcc()/1024.00f < 2) {display->drawXbm(0, 5, bat_width, bat_height, bat_bmp0);}
  else if (ESP.getVcc()/1024.00f > 2 && ESP.getVcc()/1024.00f < 2.1 ) {display->drawXbm(0, 5, bat_width, bat_height, bat_bmp10);}
  else if (ESP.getVcc()/1024.00f > 2.1 && ESP.getVcc()/1024.00f < 2.3) {display->drawXbm(0, 5, bat_width, bat_height, bat_bmp25);}
@@ -289,7 +285,7 @@ else if (WiFi.RSSI() <= -40 && WiFi.RSSI() > -50) display->drawXbm((128 - wifi_w
   display->setFont(Roboto_10);
 
 
-
+//display CO2
   display->drawString(5, 17, "CO2");
     if (readCO2() < 200)  { display->drawString(80, 16, "not work"); }
     else if (readCO2() < 600 )  { display->drawString(80, 16, "good"); }
@@ -297,10 +293,6 @@ else if (WiFi.RSSI() <= -40 && WiFi.RSSI() > -50) display->drawXbm((128 - wifi_w
     else if (readCO2() > 1000 && readCO2() < 2000)  { display->drawString(80, 16, "bad"); }
     else if (readCO2() > 2000) { display->drawString(80, 16, "alarm"); }
 
-//
-display->drawString(32, 2, String (WiFi.RSSI()));
-//
-     
   display->drawString(54, 1, "ppm");
   display->drawString(80, 1, "status");
   display->drawString((128/3)+11, 40, "°C");
@@ -314,7 +306,6 @@ display->drawString(32, 2, String (WiFi.RSSI()));
   display->drawString((128-24)/2, 11, String(readCO2()));
   display->drawString((128/3)-12, 40, "24.3");
   display->drawString((128*0,67)+22, 40, "36");
- // display->drawString(x + 57, 46, String(readCO2()));
 
   ui.disableIndicator();
 }
@@ -365,23 +356,9 @@ void setup()
 
 
   
-/*
- * Settings for CO2 sensors
-  
-
-  unsigned long previousMillis = millis();
-  co2Serial.begin(9600); //Init sensor MH-Z19(14)
-
-  Serial.println("Waiting for sensors to init");
-  while (millis() - previousMillis < 10000)
-  delay(5000); //commit taku 06/04/17
-  Serial.println("Setup finished");
-  Serial.println("");
-*/
   /*
    * Settings for display
    */
-  //Wire.pins(SDA, SCL);
   Wire.begin(SDA_PIN, SDC_PIN);
   Wire.setClock(100000);
 
@@ -399,11 +376,6 @@ void setup()
     display.init();
     display.flipScreenVertically();
     display.clear();
- //REM_LOGO//  display.drawXbm((128 - ch2i_width) / 2, 0, ch2i_width, ch2i_height, ch2i_bits);
- //   display.display();
-  //  delay (5000);
-
-
 
   //TAKU for first display of HW
 
