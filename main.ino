@@ -17,10 +17,10 @@ extern "C" {
 // Wifi Credentials
 // Leaving * will try to connect with SDK saved credentials
 //#define MY_SSID     "IT"
-//#define MY_PASSWORD "q1w2e3r4"
+//#define MY_PASSWORD "q1w2e3r4--"
 
-#define MY_SSID     "ap.droider.org"
-#define MY_PASSWORD "9032438161"
+#define MY_SSID     ""
+#define MY_PASSWORD ""
 
 
 char ssid[33] ;
