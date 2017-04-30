@@ -109,28 +109,30 @@ void drawProgress(OLEDDisplay *display, int percentage, String labeltop ) {
   Output  : -
   Comments: -
   ====================================================================== */
-void drawFrameHWInfo(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  display->clear();
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Roboto_Medium_Plain_12);
-  display->drawString(0, 0, "HWInfoID:");
-  display->drawString(60, 0, String(system_get_chip_id()));
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Roboto_10);
-  display->drawString(0, 12, "sdk:");
-  display->drawString(45, 12, system_get_sdk_version());
-  display->drawString(0, 22, "boot:");
-  display->drawString(45, 22, String(system_get_boot_version()));
-  display->drawString(0, 32, "userbin:");
-  display->drawString(45, 32, String(system_get_userbin_addr()));
-  display->drawString(0, 42, "memFree/Totl:");
-  display->drawString(80, 42, String(ESP.getFreeHeap()/1024));
+//void drawFrameHWInfo(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) 
+void drawFrameHWInfo(void)
+{
+  display.clear();
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(Roboto_Medium_Plain_12);
+  display.drawString(0, 0, "HWInfoID:");
+  display.drawString(60, 0, String(system_get_chip_id()));
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(Roboto_10);
+  display.drawString(0, 12, "sdk:");
+  display.drawString(45, 12, system_get_sdk_version());
+  display.drawString(0, 22, "boot:");
+  display.drawString(45, 22, String(system_get_boot_version()));
+  display.drawString(0, 32, "userbin:");
+  display.drawString(45, 32, String(system_get_userbin_addr()));
+  display.drawString(0, 42, "memFree/Totl:");
+  display.drawString(80, 42, String(ESP.getFreeHeap()/1024));
   //display->drawString(80, 42, String(ESP.getSketchSize()/1024));
-  display->drawString(98, 42, String(ESP.getFlashChipSize()/1024));
-  display->drawString(0, 52, "vcc:");
-  display->drawString(22, 52, String(ESP.getVcc()/1024.00f));
+  display.drawString(98, 42, String(ESP.getFlashChipSize()/1024));
+  display.drawString(0, 52, "vcc:");
+  display.drawString(22, 52, String(ESP.getVcc()/1024.00f));
   ui.disableIndicator();
-  display->display();
+  display.display();
 }
 
 /* ======================================================================
@@ -318,12 +320,10 @@ FrameCallback frames[] = { drawFrameSensors };
 //REM OLD//int numberOfFrames = 4;
 int numberOfFrames = 1;
 
-
+/*
 FrameCallback startframes[] = { drawFrameHWInfo };
-//REM OLD//FrameCallback frames[] = {drawWiFiSignal, drawFrameHWInfo, drawFrameWifi, drawFrameI2C, drawFrameSensors, drawFrameNet};
-//REM OLD//int startnumberOfFrames = 4;
 int numberOfstartFrames = 1;
-
+*/
 
 
 
@@ -352,7 +352,8 @@ void setup()
   Serial.begin(115200);
   Serial.print(F("\r\nBooting on "));
   Serial.println(ARDUINO_BOARD);
-
+  drawFrameHWInfo();
+  delay(5000);
 
 
   
