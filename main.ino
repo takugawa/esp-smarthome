@@ -352,8 +352,7 @@ void setup()
   Serial.begin(115200);
   Serial.print(F("\r\nBooting on "));
   Serial.println(ARDUINO_BOARD);
-  drawFrameHWInfo();
-  delay(5000);
+
 
 
   
@@ -377,19 +376,16 @@ void setup()
     display.init();
     display.flipScreenVertically();
     display.clear();
-
-  //TAKU for first display of HW
-
-   // drawFrameHWInfo;
-  //  display.drawString(45, 22, String(system_get_boot_version()));
-  //  delay (5000);
-
     display.setFont(ArialMT_Plain_10);
     display.setTextAlignment(TEXT_ALIGN_CENTER);
     display.setContrast(255);
     delay(500);
   }
 
+  //Started HWInfo screen
+    drawFrameHWInfo();
+    delay(10000);
+  
   // Set WiFi to station mode and disconnect from an AP if it was previously connected
   WiFi.mode(WIFI_STA);
   delay(100);
