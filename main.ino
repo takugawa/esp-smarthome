@@ -72,7 +72,7 @@ void updateData(OLEDDisplay *display) {
  readyForUpdate = false;
 }
 
-/* ======================================================================
+/* =====================================================================
   Function: drawProgress
   Purpose : prograss indication
   Input   : OLED display pointer
