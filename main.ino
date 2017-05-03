@@ -9,6 +9,11 @@
 #include "i2cCfg.h"
 #include "mhz19.h"
 #include <Adafruit_GFX.h>
+#include "SHT21.h"
+
+//Config for SHT21
+SHT21 SHT21;
+//SHT21.begin();
 
 extern "C" {
 #include "user_interface.h"
@@ -298,7 +303,7 @@ else if (WiFi.RSSI() <= -40 && WiFi.RSSI() > -50) display->drawXbm((128 - wifi_w
   display->drawString(54, 1, "ppm");
   display->drawString(80, 1, "status");
   display->drawString((128/3)+11, 40, "°C");
-  display->drawString((128*0,67)+35, 40, "%");
+  display->drawString((128*0,67)+51, 40, "%");
   
   display->drawLine(00, 36, 128, 36);//gorizontal line
   display->drawLine((128/2+3), 36, (128/2+3), 64);//vertical line
@@ -306,8 +311,10 @@ else if (WiFi.RSSI() <= -40 && WiFi.RSSI() > -50) display->drawXbm((128 - wifi_w
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(Roboto_Mono_Bold_20);
   display->drawString((128-24)/2, 11, String(readCO2()));
-  display->drawString((128/3)-12, 40, "24.3");
-  display->drawString((128*0,67)+22, 40, "36");
+  display->drawString((128/3)-12, 40, String(SHT21.getTemperature(),1));
+  //display->drawString((128/3)-12, 40, "24.3");
+  display->drawString((128*0,67)+27, 40, String(SHT21.getHumidity(),1));
+  //display->drawString((128*0,67)+22, 40, "36");
 
   ui.disableIndicator();
 }
@@ -352,7 +359,8 @@ void setup()
   Serial.begin(115200);
   Serial.print(F("\r\nBooting on "));
   Serial.println(ARDUINO_BOARD);
-
+  
+ 
 
 
   
@@ -376,16 +384,22 @@ void setup()
     display.init();
     display.flipScreenVertically();
     display.clear();
+
+  //TAKU for first display of HW
+
+   // drawFrameHWInfo;
+  //  display.drawString(45, 22, String(system_get_boot_version()));
+  //  delay (5000);
     display.setFont(ArialMT_Plain_10);
     display.setTextAlignment(TEXT_ALIGN_CENTER);
     display.setContrast(255);
-    delay(500);
+    delay(10000);
   }
 
   //Started HWInfo screen
     drawFrameHWInfo();
-    delay(10000);
-  
+    delay(5000);
+
   // Set WiFi to station mode and disconnect from an AP if it was previously connected
   WiFi.mode(WIFI_STA);
   delay(100);
@@ -403,7 +417,7 @@ void setup()
   }
 
   Serial.println(F("WiFi scan start"));
-  drawProgress(&display, pbar, F("Scanning WiFi"));
+    drawProgress(&display, pbar, F("Scanning WiFi"));
  
   //drawFrameBatInfo(&display, pbar, F("battery %"));
 
@@ -481,7 +495,7 @@ void setup()
   }
 */
 
-  
+    
   if (has_display) {
     ui.setTargetFPS(30);
     ui.setFrameAnimation(SLIDE_LEFT);
